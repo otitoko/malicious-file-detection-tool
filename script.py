@@ -1,14 +1,4 @@
-#DONE. scan fs -> how?
-# go from root and go through each file, breadth or depth first, and hash it
-
-
-
-#2. use look up database, eg. NIST NSRL
-#3. upload remaining files to Virustotal via api
-
-#4. VM (optional)
-
-import os, hashlib, requests
+import os, hashlib, requests, json, pyhashlookup
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -18,6 +8,9 @@ url = "https://www.virustotal.com/api/v3/files"
 api_key = os.getenv("vt_api_key")
 directory = "/home/lain/school/appsec/malicious-file-detection-tool"
 payload = "/home/lain/school/appsec/malicious-file-detection-tool/script.py"
+
+hashes = []
+unknown_hashes = []
 
 headers = {
     "accept": "application/json",
@@ -30,8 +23,6 @@ def hash_file(file):
         digest = hashlib.file_digest(file, "sha1")
         return digest.hexdigest()
 
-#def compare_hash(file):
-#    if hash_file(file)
 
 
 
@@ -45,18 +36,54 @@ def scan_directory(root_dir):
                     if entry.is_dir():
                         stack.append(entry.path)
                     else:
-                        print(hash_file(entry))
+                        hashes.append(hash_file(entry))
         except PermissionError:
             continue
 
-#def upload_file(file):
+    return hashes
 
 
-scan_directory(directory)
+def bulk_hash_check(hashes):
+        url = "https://hashlookup.circl.lu/bulk/md5"
+
+        data = {
+            "hashes": hashes
+            }
+        response = requests.post(url,json=data)
+
+        if response.status_code == 200:
+            return response.json()
+        else:
+            print(f"Request failed with status code {response.status_code}")
+            return None
+
+def hash_check(hash):
+    url = f"https://hashlookup.circl.lu/lookup/sha1/{hash}"
+
+    response = requests.get(url)
+    if response.status_code == 200:
+        print(f"Request success with status code {response.status_code}")
+        return response.json()
+    else:
+        print(f"Request failed with status code {response.status_code}")
+        unknown_hashes.append(hash)
+        return None
 
 
-response = requests.post(url,data=payload, headers=headers)
 
-print(response.text)
+hashes = scan_directory(directory)
 
-os.system("curl -v --request POST --url 'https://www.virustotal.com/vtapi/v2/file/report' -d apikey=817571839de6081eef21d13cd3ddbe611ae6e18902a3b3849f8b944860363af1  -d 'resource="+payload+"'")
+for hash in hashes:
+    print(hash.strip())
+    hash_check(hash)
+
+
+
+
+#if response:
+#    print(json.dumps(response, indent=4))
+
+
+command = f"curl -v --request POST --url 'https://www.virustotal.com/vtapi/v2/file/report' -d apikey='{api_key}'  -d 'resource={payload}'"
+
+#os.system(command)
