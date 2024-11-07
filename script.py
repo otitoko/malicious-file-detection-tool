@@ -1,4 +1,4 @@
-import os, hashlib, requests, json, sys
+import os, hashlib, requests, json, sys, vt
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -6,6 +6,7 @@ load_dotenv()
 url = "https://www.virustotal.com/api/v3/files"
 
 api_key = os.getenv("vt_api_key")
+client = vt.Client(api_key)
 
 directory = "./test"
 
@@ -76,6 +77,14 @@ def hash_check(hash):
         print(f"Request failed with status code {response.status_code}")
         unknown_hashes.append(hash)
         return None
+
+def vt_scan(file):
+    with open(file,"rb") as file:
+        analysis = client.scan_file(file)
+
+    return analysis
+
+
 
 
 
