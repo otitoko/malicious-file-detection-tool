@@ -1,4 +1,4 @@
-import os, hashlib, requests, json, pyhashlookup
+import os, hashlib, requests, json, sys
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -6,8 +6,16 @@ load_dotenv()
 url = "https://www.virustotal.com/api/v3/files"
 
 api_key = os.getenv("vt_api_key")
-directory = "/home/lain/school/appsec/malicious-file-detection-tool"
-payload = "/home/lain/school/appsec/malicious-file-detection-tool/script.py"
+
+directory = "./test"
+
+try:
+    if sys.argv[1] != None:
+        directory = sys.argv[1]
+except:
+    print("No path specified, defaulting to ./test: ")
+
+
 
 hashes = []
 unknown_hashes = []
@@ -44,7 +52,7 @@ def scan_directory(root_dir):
 
 
 def bulk_hash_check(hashes):
-        url = "https://hashlookup.circl.lu/bulk/md5"
+        url = "https://hashlookup.circl.lu/bulk/sha1"
 
         data = {
             "hashes": hashes
@@ -74,9 +82,9 @@ def hash_check(hash):
 hashes = scan_directory(directory)
 
 for hash in hashes:
-    print(hash.strip())
     hash_check(hash)
 
+print(unknown_hashes)
 
 
 
