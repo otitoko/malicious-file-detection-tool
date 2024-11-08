@@ -1,4 +1,4 @@
-import os, hashlib, requests, json, sys, vt
+import os, hashlib, requests, json, sys, vt,time
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -6,7 +6,7 @@ load_dotenv()
 url = "https://www.virustotal.com/api/v3/files"
 
 api_key = os.getenv("vt_api_key")
-client = vt.Client(api_key)
+client = vt.Client(f"{api_key}")
 
 directory = "./test"
 
@@ -18,8 +18,8 @@ except:
 
 
 
-hashes = []
-unknown_hashes = []
+files = []
+unknown_files = []
 
 headers = {
     "accept": "application/json",
@@ -45,14 +45,15 @@ def scan_directory(root_dir):
                     if entry.is_dir():
                         stack.append(entry.path)
                     else:
-                        hashes.append(hash_file(entry))
+                        files.append(entry)
         except PermissionError:
             continue
 
-    return hashes
+    return files
 
 
 def bulk_hash_check(hashes):
+        
         url = "https://hashlookup.circl.lu/bulk/sha1"
 
         data = {
@@ -66,25 +67,32 @@ def bulk_hash_check(hashes):
             print(f"Request failed with status code {response.status_code}")
             return None
 
-def hash_check(hash):
+def hash_check(file):
+    hash = hash_file(file)
     url = f"https://hashlookup.circl.lu/lookup/sha1/{hash}"
 
     response = requests.get(url)
-    if response.status_code == 200:
+    data = response.json()
+
+    if response.status_code == 200 and data["hashlookup:trust"]>75:
         print(f"Request success with status code {response.status_code}")
         return response.json()
     else:
         print(f"Request failed with status code {response.status_code}")
-        unknown_hashes.append(hash)
+        unknown_files.append(file)
         return None
 
+
 def vt_scan(file):
-    with open(file,"rb") as file:
+    with open(file.path,"rb") as file:
         analysis = client.scan_file(file)
-
-    return analysis
-
-
+    while True:
+        analysis = client.get_object("/analyses/{}", analysis.id)
+        print(analysis.status)
+        if analysis.status == "completed":
+            print(analysis.stats)
+            break
+        time.sleep(30)
 
 
 
@@ -93,14 +101,11 @@ hashes = scan_directory(directory)
 for hash in hashes:
     hash_check(hash)
 
-print(unknown_hashes)
+print(unknown_files)
+for file in unknown_files:
+    analysis = vt_scan(file)
 
 
 
-#if response:
-#    print(json.dumps(response, indent=4))
 
-
-command = f"curl -v --request POST --url 'https://www.virustotal.com/vtapi/v2/file/report' -d apikey='{api_key}'  -d 'resource={payload}'"
-
-#os.system(command)
+client.close()
