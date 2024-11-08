@@ -34,21 +34,6 @@ def scan_directory(root_dir):
     return files
 
 
-def bulk_hash_check(hashes):
-        
-        url = "https://hashlookup.circl.lu/bulk/sha1"
-
-        data = {
-            "hashes": hashes
-            }
-        response = requests.post(url,json=data)
-
-        if response.status_code == 200:
-            return response.json()
-        else:
-            print(f"Request failed with status code {response.status_code}")
-            return None
-
 def hash_check(file):
     hash = hash_file(file)
     url = f"https://hashlookup.circl.lu/lookup/sha1/{hash}"
@@ -78,14 +63,6 @@ def vt_scan(file):
             break
         time.sleep(30)
 
-
-def compress_files(unknown_files):
-    unknown_files_arc = tarfile.open("unknown_files_arc",mode='x:gz')
-
-    for file in unknown_files:
-        unknown_files_arc.add(file)
-
-    return unknown_files_arc
 
 def zip_files(unknown_files):
     archive_name = "unknown_files_arc.zip"
