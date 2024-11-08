@@ -19,13 +19,17 @@ except:
     print("No path specified, defaulting to ./test: ")
 
 
-hashes = functions.scan_directory(directory)
+files = functions.scan_directory(directory)
 
-for hash in hashes:
-    functions.hash_check(hash)
+for entry in files:
+    functions.hash_check(entry)
+
+    
+
 
 unknown_files_arc = functions.zip_files(functions.unknown_files)
-analysis = functions.vt_scan(unknown_files_arc)
+
+analysis = functions.vt_scan(entry)
 
 
 unknown_files_arc_path = "./unknown_files_arc.zip"

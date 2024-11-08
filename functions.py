@@ -1,4 +1,4 @@
-import os, hashlib, requests,time, tarfile, zipfile, vt
+import os, hashlib, requests,time, zipfile, vt
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -59,6 +59,7 @@ def vt_scan(file):
         analysis = client.get_object("/analyses/{}", analysis.id)
         print(analysis.status)
         if analysis.status == "completed":
+            
             print(analysis.stats)
             break
         time.sleep(30)
