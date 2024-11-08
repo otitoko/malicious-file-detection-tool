@@ -29,7 +29,7 @@ for entry in files:
 
 unknown_files_arc = functions.zip_files(functions.unknown_files)
 
-analysis = functions.vt_scan(entry)
+analysis = functions.vt_scan(unknown_files_arc)
 
 
 unknown_files_arc_path = "./unknown_files_arc.zip"
