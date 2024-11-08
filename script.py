@@ -1,4 +1,8 @@
-import os, hashlib, requests, json, sys, vt,time
+#TODO
+#1. print the info all at once with the respective name of the file
+#2. separate the functions into files
+
+import os, hashlib, requests, json, sys, vt,time, tarfile
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -83,6 +87,8 @@ def hash_check(file):
         return None
 
 
+
+
 def vt_scan(file):
     with open(file.path,"rb") as file:
         analysis = client.scan_file(file)
@@ -95,15 +101,23 @@ def vt_scan(file):
         time.sleep(30)
 
 
+def compress_files(unknown_files):
+    with tarfile.open(unknown_files_arc,mode='x:gz') as tar:
+
+        for file in unknown_files:
+            tar.add(file, unknown_files_arc)
+
+    return unknown_files_arc
+
+
 
 hashes = scan_directory(directory)
 
 for hash in hashes:
     hash_check(hash)
 
-print(unknown_files)
-for file in unknown_files:
-    analysis = vt_scan(file)
+unknown_files_arc = compress_files(unknown_files)
+analysis = vt_scan(unknown_files_arc)
 
 
 
