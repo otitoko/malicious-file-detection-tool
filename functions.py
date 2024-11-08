@@ -1,4 +1,4 @@
-import os, hashlib, requests,time, zipfile, vt
+import os, hashlib, requests,time, vt
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -57,21 +57,8 @@ def vt_scan(file):
         analysis = client.scan_file(file)
     while True:
         analysis = client.get_object("/analyses/{}", analysis.id)
-        print(analysis.status)
         if analysis.status == "completed":
-            
             print(analysis.stats)
             break
         time.sleep(30)
 
-
-def zip_files(unknown_files):
-    archive_name = "unknown_files_arc.zip"
-
-    # Open the archive in write mode
-    with zipfile.ZipFile(archive_name, mode='w', compression=zipfile.ZIP_DEFLATED) as archive:
-        for file in unknown_files:
-            archive.write(file)  # Add each file to the .zip archive
-            print(f"Added {file} to {archive_name}")
-
-    return archive_name 

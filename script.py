@@ -27,11 +27,13 @@ for entry in files:
     
 
 
-unknown_files_arc = functions.zip_files(functions.unknown_files)
+#unknown_files_arc = functions.zip_files(functions.unknown_files)
 
-analysis = functions.vt_scan(unknown_files_arc)
+for entry in functions.unknown_files:
+    print(entry)
+    analysis = functions.vt_scan(entry)
 
 
-unknown_files_arc_path = "./unknown_files_arc.zip"
-os.remove(unknown_files_arc_path)
+#unknown_files_arc_path = "./unknown_files_arc.zip"
+#os.remove(unknown_files_arc_path)
 functions.client.close()
