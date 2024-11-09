@@ -45,7 +45,8 @@ else:
 
 
 path_to_pip = "pip"
-path = input("Specify path to pip. (leave blank if not using virtual environment)\n")
+path = input("Specify path to pip. (leave blank and run as super user if not using virtual environment)\n")
+
 if path != None:
     path_to_pip = path
 
