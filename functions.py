@@ -28,7 +28,6 @@ def scan_directory(root_dir):
         try:
             with os.scandir(current_dir) as entries:
                 for entry in entries:
-                    print(entry)
                     if entry.is_dir():
                         stack.append(entry.path)
                     else:
