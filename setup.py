@@ -32,6 +32,15 @@ if clone_answer == 'y':
         f.close()
     except:
         print("Directory malware_scanner_test_dir already exists")
+else:
+    try:
+        os.mkdir(f"test_dir_path")
+        f = open(".env", "a")
+        f.write(f"test_dir_path={test_dir_path}")
+        f.close()
+    except:
+        print("Directory malware_scanner_test_dir already exists")
+
 
 
 
