@@ -2,15 +2,6 @@
 
 This tool provides a robust method for detecting potentially malicious files on your system. It recursively scans directories (depth-first), checks found files against the **NIST RDS** (National Institute of Standards and Technology Reference Data Set) for known safe files, and sends any unknown or untrusted files to **VirusTotal** for additional scanning via its API.
 
-## Features
-
-- **Directory Scanning**: Recursively scans specified directories for files.
-- **NIST RDS Check**: Cross-references files with the NIST RDS to filter known safe files.
-- **VirusTotal Integration**: Sends unknown or suspicious files to VirusTotal for analysis.
-- **Efficient**: Uses `aiohttp` for asynchronous HTTP requests, ensuring responsive performance during scanning.
-
-## Requirements
-
 To use this tool, you'll need the following:
 
 - **VirusTotal API Key**: Required for VirusTotal integration.
@@ -47,9 +38,16 @@ Install the following packages for this tool to work correctly:
 
 ### Installation
 
-#### 1. Clone the Repository
+1. **Run Setup Script**
 
-```bash
-git clone https://github.com/your-username/malicious-file-detection-tool.git
-cd malicious-file-detection-tool
+   Run `setup.py` to configure the environment:
 
+   ```bash
+   python setup.py
+
+2. **Run Scanner Script**
+
+   Run `script.py` to run the scanner:
+
+   ```bash
+   python script.py <dir_to_scan>
