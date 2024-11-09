@@ -10,13 +10,13 @@ import functions
 load_dotenv()
 
 
-directory = "./test"
+directory = os.getenv("test_dir_path")
 
 try:
     if sys.argv[1] != None:
         directory = sys.argv[1]
 except:
-    print("No path specified, defaulting to ./test: ")
+    print("No path specified, defaulting to ./malware_scanner_test_dir: ")
 
 
 files = functions.scan_directory(directory)
@@ -27,13 +27,10 @@ for entry in files:
     
 
 
-#unknown_files_arc = functions.zip_files(functions.unknown_files)
 
 for entry in functions.unknown_files:
     print(entry)
     analysis = functions.vt_scan(entry)
 
 
-#unknown_files_arc_path = "./unknown_files_arc.zip"
-#os.remove(unknown_files_arc_path)
 functions.client.close()
